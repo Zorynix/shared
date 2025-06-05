@@ -24,6 +24,7 @@ type DatabaseConfig struct {
 	Database        string `yaml:"database" validate:"required"`
 	Username        string `yaml:"username" validate:"required"`
 	Password        string `yaml:"password"`
+	DSN             string `yaml:"dsn"`
 	SSLMode         string `yaml:"ssl_mode" validate:"oneof=disable require verify-ca verify-full"`
 	MaxOpenConns    int    `yaml:"max_open_conns" validate:"min=1"`
 	MaxIdleConns    int    `yaml:"max_idle_conns" validate:"min=1"`
