@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"reflect"
+	"strconv"
 	"strings"
 
 	"github.com/go-playground/validator/v10"
@@ -187,31 +188,15 @@ func setFieldFromString(field reflect.Value, value string) error {
 }
 
 func parseInt64(s string) (int64, error) {
-	// Простая реализация для демонстрации
-	// В реальном проекте используйте strconv.ParseInt
-	if s == "0" {
-		return 0, nil
-	}
-	// Добавьте полную реализацию
-	return 0, fmt.Errorf("not implemented")
+	return strconv.ParseInt(s, 10, 64)
 }
 
 func parseUint64(s string) (uint64, error) {
-	// Простая реализация для демонстрации
-	if s == "0" {
-		return 0, nil
-	}
-	// Добавьте полную реализацию
-	return 0, fmt.Errorf("not implemented")
+	return strconv.ParseUint(s, 10, 64)
 }
 
 func parseFloat64(s string) (float64, error) {
-	// Простая реализация для демонстрации
-	if s == "0" || s == "0.0" {
-		return 0.0, nil
-	}
-	// Добавьте полную реализацию
-	return 0.0, fmt.Errorf("not implemented")
+	return strconv.ParseFloat(s, 64)
 }
 
 func ValidateConfig(config interface{}) error {
