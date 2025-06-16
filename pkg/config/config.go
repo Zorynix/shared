@@ -127,15 +127,16 @@ func applyEnvOverridesToStruct(v reflect.Value, prefix string) error {
 
 		envName := buildEnvName(prefix, yamlName)
 
-		if envValue := os.Getenv(envName); envValue != "" {
-			if err := setFieldFromString(field, envValue); err != nil {
-				return fmt.Errorf("failed to set field %s from env %s: %w", fieldType.Name, envName, err)
-			}
-		}
-
 		if field.Kind() == reflect.Struct {
 			if err := applyEnvOverridesToStruct(field, envName); err != nil {
 				return err
+			}
+			continue
+		}
+
+		if envValue := os.Getenv(envName); envValue != "" {
+			if err := setFieldFromString(field, envValue); err != nil {
+				return fmt.Errorf("failed to set field %s from env %s: %w", fieldType.Name, envName, err)
 			}
 		}
 	}
@@ -180,6 +181,17 @@ func setFieldFromString(field reflect.Value, value string) error {
 			field.SetFloat(floatVal)
 		} else {
 			return err
+		}
+	case reflect.Slice:
+		if field.Type().Elem().Kind() == reflect.String {
+			values := strings.Split(value, ",")
+			slice := reflect.MakeSlice(field.Type(), len(values), len(values))
+			for i, v := range values {
+				slice.Index(i).SetString(strings.TrimSpace(v))
+			}
+			field.Set(slice)
+		} else {
+			return fmt.Errorf("unsupported slice element type: %s", field.Type().Elem().Kind())
 		}
 	default:
 		return fmt.Errorf("unsupported field type: %s", field.Kind())
