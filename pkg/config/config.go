@@ -68,6 +68,9 @@ type MonitoringConfig struct {
 
 func LoadConfig[T any](configPath string, target *T) error {
 	data, err := os.ReadFile(configPath)
+
+	fmt.Println(data)
+
 	if err != nil {
 		return fmt.Errorf("failed to read config file: %w", err)
 	}
