@@ -126,16 +126,24 @@ func applyEnvOverridesToStruct(v reflect.Value, prefix string) error {
 			continue
 		}
 
-		yamlName := strings.Split(yamlTag, ",")[0]
-
-		envName := buildEnvName(prefix, yamlName)
+		yamlParts := strings.Split(yamlTag, ",")
+		yamlName := yamlParts[0]
+		isInline := len(yamlParts) > 1 && yamlParts[1] == "inline"
 
 		if field.Kind() == reflect.Struct {
-			if err := applyEnvOverridesToStruct(field, envName); err != nil {
+			var structPrefix string
+			if isInline {
+				structPrefix = prefix
+			} else {
+				structPrefix = buildEnvName(prefix, yamlName)
+			}
+			if err := applyEnvOverridesToStruct(field, structPrefix); err != nil {
 				return err
 			}
 			continue
 		}
+
+		envName := buildEnvName(prefix, yamlName)
 
 		if envValue := os.Getenv(envName); envValue != "" {
 			if err := setFieldFromString(field, envValue); err != nil {
